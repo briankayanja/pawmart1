@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☕ Coffee Shop Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c1810 0%, #4a2c1a 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #6f4e37 0%, #8b6b4f 100%);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            color: #f5e6d3;
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            color: #d4c4b5;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .header .coffee-icon {
+            font-size: 2em;
+        }
+
+        /* Main Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Menu Section */
+        .menu-section {
+            background: #f5e6d3;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .menu-section h2 {
+            color: #2c1810;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #8b6b4f;
+            padding-bottom: 10px;
+        }
+
+        .menu-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .menu-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: #8b6b4f;
+        }
+
+        .menu-item.selected {
+            border-color: #6f4e37;
+            background: #f0e6d8;
+        }
+
+        .menu-item-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-item-name {
+            font-weight: 600;
+            color: #2c1810;
+            font-size: 1.1em;
+        }
+
+        .menu-item-category {
+            font-size: 0.85em;
+            color: #8b6b4f;
+            margin-top: 3px;
+        }
+
+        .menu-item-price {
+            font-weight: bold;
+            color: #6f4e37;
+            font-size: 1.2em;
+            background: #f0e6d8;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .quantity-btn {
+            background: #8b6b4f;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .quantity-btn:hover {
+            background: #6f4e37;
+        }
+
+        .quantity-display {
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, #6f4e37, #8b6b4f);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+            margin-left: 10px;
+        }
+
+        .add-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Order Section */
+        .order-section {
+            background: #f5e6d3;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .order-section h2 {
+            color: #2c1810;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #8b6b4f;
+            padding-bottom: 10px;
+        }
+
+        .order-item {
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .order-item-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .order-item-name {
+            font-weight: 500;
+            color: #2c1810;
+        }
+
+        .order-item-details {
+            font-size: 0.9em;
+            color: #8b6b4f;
+        }
+
+        .order-item-price {
+            font-weight: bold;
+            color: #6f4e37;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.2s;
+        }
+
+        .remove-btn:hover {
+            background: #c82333;
+        }
+
+        .order-total {
+            background: #2c1810;
+            color: #f5e6d3;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .order-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .order-actions button:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-checkout {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-clear {
+            background: #6c757d;
+            color: white;
+        }
+
+        .empty-cart {
+            text-align: center;
+            color: #8b6b4f;
+            padding: 30px 0;
+            font-size: 1.1em;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            background: #28a745;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 600;
+            animation: slideIn 0.5s ease;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #2c1810;
+            color: #f5e6d3;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>☕ Welcome to Our Cafe</h1>
+            <p>🌱 Freshly brewed with love • Quality ingredients • Perfect start to your day</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Menu Section -->
+            <div class="menu-section">
+                <h2>📋 Our Menu</h2>
+                <div id="menuContainer"></div>
+            </div>
+
+            <!-- Order Section -->
+            <div class="order-section">
+                <h2>🛒 Your Order</h2>
+                <div id="orderContainer">
+                    <div class="empty-cart">🛍️ Your cart is empty<br><small>Select some delicious items from the menu!</small></div>
+                </div>
+                <div id="orderTotal" style="display: none;">
+                    <div class="order-total">
+                        <span>Total</span>
+                        <span id="totalPrice">$0.00</span>
+                    </div>
+                    <div class="order-actions">
+                        <button class="btn-checkout" onclick="checkout()">✅ Checkout</button>
+                        <button class="btn-clear" onclick="clearOrder()">🗑️ Clear</button>
+                    </div>
+                </div>
+                <div id="successMessage" class="success-message">
+                    🎉 Thank you for your order! Enjoy your drinks!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Menu data
+        const menu = [
+            { id: 1, name: "Milk Tea", price: 3.50, category: "Tea" },
+            { id: 2, name: "Black Tea", price: 2.50, category: "Tea" },
+            { id: 3, name: "Coffee", price: 3.00, category: "Coffee" },
+            { id: 4, name: "Latte Coffee", price: 4.50, category: "Coffee" },
+            { id: 5, name: "Green Tea", price: 3.00, category: "Tea" },
+            { id: 6, name: "Cappuccino", price: 4.00, category: "Coffee" },
+            { id: 7, name: "Hot Chocolate", price: 3.75, category: "Beverage" }
+        ];
+
+        let order = [];
+        let quantities = {};
+
+        // Initialize quantities
+        menu.forEach(item => {
+            quantities[item.id] = 0;
+        });
+
+        // Render menu
+        function renderMenu() {
+            const container = document.getElementById('menuContainer');
+            container.innerHTML = '';
+            
+            menu.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'menu-item';
+                div.innerHTML = `
+                    <div class="menu-item-info">
+                        <span class="menu-item-name">${item.name}</span>
+                        <span class="menu-item-category">${item.category}</span>
+                        <div class="quantity-control">
+                            <button class="quantity-btn" onclick="updateQuantity(${item.id}, -1)">−</button>
+                            <span class="quantity-display" id="qty-${item.id}">${quantities[item.id]}</span>
+                            <button class="quantity-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                            <button class="add-btn" onclick="addToOrder(${item.id})">Add</button>
+                        </div>
+                    </div>
+                    <span class="menu-item-price">$${item.price.toFixed(2)}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Update quantity
+        function updateQuantity(itemId, change) {
+            const newQty = Math.max(0, quantities[itemId] + change);
+            quantities[itemId] = newQty;
+            document.getElementById(`qty-${itemId}`).textContent = newQty;
+        }
+
+        // Add to order
+        function addToOrder(itemId) {
+            const quantity = quantities[itemId];
+            if (quantity === 0) {
+                showToast('⚠️ Please select a quantity first!');
+                return;
+            }
+
+            const item = menu.find(i => i.id === itemId);
+            const existingItem = order.find(i => i.id === itemId);
+
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                order.push({ ...item, quantity: quantity });
+            }
+
+            // Reset quantity
+            quantities[itemId] = 0;
+            document.getElementById(`qty-${itemId}`).textContent = '0';
+            
+            showToast(`✅ Added ${quantity}x ${item.name} to your order!`);
+            updateOrderDisplay();
+        }
+
+        // Remove from order
+        function removeFromOrder(itemId) {
+            order = order.filter(item => item.id !== itemId);
+            updateOrderDisplay();
+            showToast('🗑️ Item removed from order');
+        }
+
+        // Update order display
+        function updateOrderDisplay() {
+            const container = document.getElementById('orderContainer');
+            const totalContainer = document.getElementById('orderTotal');
+            const totalPriceEl = document.getElementById('totalPrice');
+
+            if (order.length === 0) {
+                container.innerHTML = `<div class="empty-cart">🛍️ Your cart is empty<br><small>Select some delicious items from the menu!</small></div>`;
+                totalContainer.style.display = 'none';
+                document.getElementById('successMessage').classList.remove('show');
+                return;
+            }
+
+            let html = '';
+            let total = 0;
+
+            order.forEach(item => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+                html += `
+                    <div class="order-item">
+                        <div class="order-item-info">
+                            <span class="order-item-name">${item.name}</span>
+                            <span class="order-item-details">${item.quantity} × $${item.price.toFixed(2)}</span>
+                        </div>
+                        <div>
+                            <span class="order-item-price">$${subtotal.toFixed(2)}</span>
+                            <button class="remove-btn" onclick="removeFromOrder(${item.id})">✕</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            totalPriceEl.textContent = `$${total.toFixed(2)}`;
+            totalContainer.style.display = 'block';
+        }
+
+        // Checkout
+        function checkout() {
+            if (order.length === 0) {
+                showToast('⚠️ Your cart is empty!');
+                return;
+            }
+
+            const total = order.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            // Log order to console
+            console.log('📝 Order Details:');
+            console.log('Items:', order);
+            console.log('Total:', total);
+            
+            document.getElementById('successMessage').classList.add('show');
+            showToast(`🎉 Thank you! Total: $${total.toFixed(2)}`);
+            
+            // Clear order after delay
+            setTimeout(() => {
+                order = [];
+                updateOrderDisplay();
+                document.getElementById('successMessage').classList.remove('show');
+            }, 3000);
+        }
+
+        // Clear order
+        function clearOrder() {
+            if (order.length === 0) {
+                showToast('🛍️ Cart is already empty');
+                return;
+            }
+            order = [];
+            updateOrderDisplay();
+            showToast('🗑️ Cart cleared');
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        // Initialize
+        renderMenu();
+        updateOrderDisplay();
+    </script>
+</body>
+</html>
